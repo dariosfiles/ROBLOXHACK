@@ -1,23 +1,28 @@
 @echo off
-title Silba Boom Deleter V3
+echo WARNING: You are about to permanently delete system files!
+echo This action CANNOT be undone.
+pause
+
 set /p path="Enter the full path of the file or folder to delete: "
 
-:: Check if the path exists
-if not exist "%path%" (
-    echo Path does not exist.
-    pause
-    exit /b
-)
+:: Run as SYSTEM using PsExec (Requires Sysinternals)
+echo Running as SYSTEM...
+psexec -s -i cmd /c "takeown /f \"%path%\" /r /d y"
+psexec -s -i cmd /c "icacls \"%path%\" /grant Everyone:F /t /c /q"
 
-:: Check if it's a file
+:: Remove file/folder attributes
+attrib -r -s -h "%path%" /s /d
+
+:: Force delete file
+del /f /q "%path%" >nul 2>&1
+rmdir /s /q "%path%" >nul 2>&1
+
+:: Check if deletion was successful
 if exist "%path%" (
-    del /f /q "%path%" && echo File deleted: %path% && exit /b
+    echo ERROR: Unable to delete "%path%". Try booting from a Live OS.
+) else (
+    echo SUCCESS: "%path%" has been deleted.
 )
 
-:: Check if it's a directory
-if exist "%path%\*" (
-    rmdir /s /q "%path%" && echo Folder deleted: %path% && exit /b
-)
-
-echo Error: Could not delete the specified path.
 pause
+exit

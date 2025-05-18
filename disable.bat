@@ -1,10 +1,9 @@
 @echo off
 cls
 @echo off
-title Fortnite Hack Inject - Moonlit
+title Dependecies - Visual Studio
 color 0c
 echo Installing dependencies...
-pause >nul
 cls
 
 :: Set variables
